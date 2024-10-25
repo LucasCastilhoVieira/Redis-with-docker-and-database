@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.use_cases.user_update import UserUpdate
 from infrastructure.db.repositories.UsersRepository import UserRepository
-from app.Utils.Exceptions import NotUpdated, ErrorConsultNotFound,ErrorEmail, ErrorLyricsInCpf, InvalidCpf, InvalidTel, IncompleteCpf, IncompleteTel
+from app.Utils.Exceptions import NotUpdated, ErrorConsultNotFound, ErrorLyricsInTel,\
+ErrorEmail, ErrorLyricsInCpf, InvalidCpf, InvalidTel, IncompleteCpf, IncompleteTel
 from pydantic import Field, BaseModel
-
+from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
 router = APIRouter(tags=['USUARIOS'])
 
@@ -31,7 +32,7 @@ class UserUpdated(BaseModel):
 
 
 
-Update = lambda: UserUpdate(repository=UserRepository())
+Update = lambda: UserUpdate(repository=UserRepository(), redis_repository=UserRedisRepository())
 @router.put('/Update', response_model=UserUpdated)
 def update_user_info(Info: InfoUpdate, use_cases: UserUpdate = Depends(Update)):
     try:
@@ -72,3 +73,6 @@ def update_user_info(Info: InfoUpdate, use_cases: UserUpdate = Depends(Update)):
     
     except InvalidTel as invalid_tel:
         raise HTTPException(status_code=400, detail={"Error": f'{invalid_tel}', 'Type': 'Update Users', 'Count': 1, 'User': 'Not updated'})
+    
+    except ErrorLyricsInTel as lyrics_cpf:
+        raise HTTPException(status_code=400, detail={"Error": f'{lyrics_cpf}', 'Type': 'Consult Users', 'Count': 1, 'User': 'Not updated'})

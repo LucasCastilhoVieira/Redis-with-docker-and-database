@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from app.use_cases.user_delete import UserDelete
 from infrastructure.db.repositories.UsersRepository import UserRepository
 from app.Utils.Exceptions import IncompleteCpf, InvalidCpf, ErrorConsultNotFound, ErrorLyricsInCpf
+from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
 
 router = APIRouter(tags=['USUARIOS'])
@@ -20,7 +21,7 @@ class SuccessResponse(BaseModel):
     User: str = Field('Deleted')
     Attributes: Atributtes
     
-UserDeleteUseCase = lambda: UserDelete(repository=UserRepository())
+UserDeleteUseCase = lambda: UserDelete(repository=UserRepository(), redis_repository=UserRedisRepository())
 @router.delete('/Delete', response_model=SuccessResponse, status_code=200)
 def delete(CPF: str, use_case: UserDelete = Depends(UserDeleteUseCase)):
     try:

@@ -3,10 +3,14 @@ from app.interfaces.use_cases.user_delete import UserDeleteInterface
 from app.Utils.Exceptions import ErrorLyricsInCpf, IncompleteCpf, InvalidCpf, ErrorConsultNotFound
 import re
 from app.interfaces.user_repository import UserRepositoryInterface
+from app.interfaces.redis_repository import RedisUserInterface
+
+
 
 class UserDelete(UserDeleteInterface):
-    def __init__(self, repository: UserRepositoryInterface):
+    def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repo = repository
+        self.user_redis_repo = redis_repository
         
     def info_user(self, cpf: str):
         select = self.user_repo.select(cpf)
@@ -18,6 +22,7 @@ class UserDelete(UserDeleteInterface):
         cpf_format = self.cpf_format(cpf)
         select = self.info_user(cpf_format)
         self.verification_select(select)
+        self.user_redis_repo.delete_user_redis(cpf_format)
         self.user_repo.remove_user(cpf_format)
         response = self.response(select)
         return response

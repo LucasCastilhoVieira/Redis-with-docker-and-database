@@ -3,8 +3,9 @@ from infrastructure.db.repositories.UsersRepository import UserRepository
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
 from fastapi.exceptions import HTTPException
-from app.Utils.Exceptions import ErrorConsultNotFound, InvalidCpf, IncompleteCpf, ErrorLyricsInCpf
+from app.Utils.Exceptions import ErrorConsultNotFound, InvalidCpf, IncompleteCpf, ErrorLyricsInCpf, ErrorLyricsInTel
 from fastapi.responses import JSONResponse
+from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
 
 class Info(BaseModel):
@@ -15,6 +16,7 @@ class Info(BaseModel):
 
 
 class UserFound(BaseModel):
+    Where: str = Field('Redis or Database')
     Type: str = Field('Consult Users')
     Count: int = Field(1)
     User: str = Field('Found')
@@ -26,13 +28,14 @@ router = APIRouter(tags=['USUARIOS'])
 
 
 
-UserInfoUseCase = lambda: UserInfo(repository=UserRepository())
+UserInfoUseCase = lambda: UserInfo(repository=UserRepository(), redis_repository=UserRedisRepository())
 @router.get('/Consult', response_model=UserFound, status_code=200)
 def consult(CPF: str, use_case: UserInfo = Depends(UserInfoUseCase)):
     try:
         res = use_case.select_user(CPF)
         
         return JSONResponse(status_code=200,content=UserFound(
+            Where=res['Where'],
             Type='Consult Users',
             Count=1,
             User='Found',
@@ -61,4 +64,6 @@ def consult(CPF: str, use_case: UserInfo = Depends(UserInfoUseCase)):
     
     except ErrorLyricsInCpf as lyrics_cpf:
         raise HTTPException(status_code=400, detail={"Error": f'{lyrics_cpf}', 'Type': 'Consult Users', 'Count': 1, 'User': 'Not found'})
+    
+ 
     

@@ -4,3 +4,7 @@ class Users:
         self.cpf = cpf
         self.telefone = telefone 
         self.email = email
+        
+        
+
+

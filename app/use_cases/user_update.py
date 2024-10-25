@@ -1,13 +1,16 @@
 from app.interfaces.use_cases.user_update import UserUpdateInterface
 from app.interfaces.user_repository import UserRepositoryInterface
 from typing import Dict
-from app.Utils.Exceptions import ErrorLyricsInCpf, InvalidCpf, IncompleteCpf, IncompleteTel, InvalidTel, ErrorEmail, NotUpdated, ErrorConsultNotFound
-import re
+from app.Utils.Exceptions import ErrorLyricsInCpf, ErrorLyricsInTel,\
+InvalidCpf, IncompleteCpf, IncompleteTel, InvalidTel, ErrorEmail, NotUpdated, ErrorConsultNotFound
 
+import re
+from app.interfaces.redis_repository import RedisUserInterface
 
 class UserUpdate(UserUpdateInterface):
-    def __init__(self, repository: UserRepositoryInterface):
+    def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repository = repository
+        self.user_redis_repo = redis_repository
         
     def info_before(self, cpf: str):
         select = self.user_repository.select(cpf)
@@ -21,7 +24,9 @@ class UserUpdate(UserUpdateInterface):
         tel = self.format_tel(telefone)
         self.verification_email(email)
         
+        
         response = self.response(select_before, tel, email)
+        self.user_redis_repo.update_user_redis(cpf_format, email, tel)
         self.user_repository.update_user(cpf_format, email, tel)       
         return response
     
@@ -78,6 +83,11 @@ class UserUpdate(UserUpdateInterface):
                     raise IncompleteTel('TELEFONE INCOMPLETO')
                 elif len(telefone) > 11:
                     raise IncompleteTel('TELEFONE MUITO GRANDE')
+                
+                abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','ç']
+                for letra in abc:
+                    if letra in telefone or letra.upper() in telefone:
+                        raise ErrorLyricsInTel('O TELEFONE NÃO DEVE CONTER LETRAS')
     
     @classmethod
     def verification_email(self, email):

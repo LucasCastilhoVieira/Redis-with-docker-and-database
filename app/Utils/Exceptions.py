@@ -61,6 +61,15 @@ class ErrorLyricsInCpf(Exception):
         
     def show(self):
         return self.msg      
+    
+class ErrorLyricsInTel(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+        self.show()
+        
+    def show(self):
+        return self.msg      
+
 
 
 class ErrorEmail(Exception):

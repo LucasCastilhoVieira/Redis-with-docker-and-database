@@ -15,7 +15,6 @@ class UserRepositoryInterface(ABC):
     @abstractmethod
     def remove_user(self, cpf): pass
     
-    
     @abstractmethod
     def update_user(self, cpf: str, email = '', telefone = ''): pass
         

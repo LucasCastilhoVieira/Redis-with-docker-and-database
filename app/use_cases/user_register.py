@@ -1,28 +1,31 @@
 from app.interfaces.use_cases.user_register import UserRegisterInterface
 from app.interfaces.user_repository import UserRepositoryInterface
+from app.interfaces.redis_repository import RedisUserInterface
 from typing import Dict
-from app.Utils.Exceptions import IncompleteCpf, ErrorNumberInName, InvalidCpf, ErrorLyricsInCpf, ErrorEmail, InvalidTel, IncompleteTel
+from app.Utils.Exceptions import IncompleteCpf, ErrorNumberInName,\
+InvalidCpf, ErrorLyricsInCpf, ErrorEmail, InvalidTel, IncompleteTel, ErrorLyricsInTel
 import re
 
+
 class UserRegister(UserRegisterInterface):
-    def __init__(self, repository: UserRepositoryInterface):
+    def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repo = repository
+        self.user_redis_repo = redis_repository
         
     
-    def user_register_db(self, nome: str, cpf: str, telefone: int, email: str) -> Dict: 
+    def user_register(self, nome: str, cpf: str, telefone: int, email: str) -> Dict: 
 
             cpf_str = str(cpf)
             tele = str(telefone)
             
             self.verification_name(nome.title())
-            
             format_cpf = self.formatation_cpf(cpf_str)
             tel = self.format_tel(tele)
             self.verification_email(email)
-            response = self.response(nome.title(), format_cpf, tel, email)
-            
-            
+
+            self.user_redis_repo.insert_redis(nome.title(), format_cpf, tel, email)
             self.user_repo.insert(nome.title(), format_cpf, tel, email)
+            response = self.response(nome.title(), format_cpf, tel, email)
             return response
         
 
@@ -83,16 +86,21 @@ class UserRegister(UserRegisterInterface):
     
     
     def format_tel(self, telefone: str):
-        try:
+            abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','ç']
+            for letra in abc:
+                if letra in telefone or letra.upper() in telefone:
+                    raise ErrorLyricsInTel('O TELEFONE NÃO DEVE CONTER LETRAS')
+                
             if len(telefone) == 11:
                 format = '({}) {}-{}'.format(telefone[:2], telefone[2:7], telefone[7:])
                 return format
             elif len(telefone) < 11:
                 raise IncompleteTel('TELEFONE INCOMPLETO')
-        except:
-            raise InvalidTel('TELEFONE INVÁLIDO')
-        
-    
+            else:
+                raise IncompleteTel('TELEFONE MUITO GRANDE')
+
+
+
     @classmethod
     def response(self, nome, cpf, telefone, email):
         

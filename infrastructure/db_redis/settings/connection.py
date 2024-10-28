@@ -1,6 +1,6 @@
 from .redis_config_connection.config import redis_config
 from redis import Redis
-import json
+
 class RedisConnectionHandler:
     def __init__(self):
         self.host = redis_config['host']

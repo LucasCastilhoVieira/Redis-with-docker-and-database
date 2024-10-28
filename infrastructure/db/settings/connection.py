@@ -1,9 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
+
+db_port = os.getenv('DB_PORT', '3306')
+db_user = os.getenv('DB_USER', 'root')
+db_password = os.getenv('DB_PASSWORD', 'root')
 class ConnectionDB:
     def __init__(self):
-        self.url = 'mysql+pymysql://root:root@localhost/Users'
+        self.url = f"mysql+pymysql://{db_user}:{db_password}@db:{db_port}/Users"
         self.engine = self.create_engine()
         self.session = None
         

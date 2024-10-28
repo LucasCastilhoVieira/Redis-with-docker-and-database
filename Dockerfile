@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 
+
 FROM python:3.12-alpine3.20
 
 WORKDIR /app
@@ -11,4 +12,5 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 COPY . .
 
 CMD ["uvicorn","main:app", "--reload","--host", "0.0.0.0"]
+
 

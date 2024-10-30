@@ -37,15 +37,18 @@ class UserRedisRepository(RedisUserInterface):
         
     def update_user_redis(self, cpf: str, email = '', telefone = ''):
         user = self.redis.get(cpf)
-        user_redis = json.loads(user)
-        if not email:
-            user_redis['telefone'] = telefone
-        if not telefone:
-            user_redis['email'] = email
-            
-        if email and telefone:
-            user_redis['telefone'] = telefone
-            user_redis['email'] = email
-        user = json.dumps(user_redis)
-        self.redis.set(cpf, user)        
+        if user is None:
+            return None
+        else:
+            user_redis = json.loads(user)
+            if not email:
+                user_redis['telefone'] = telefone
+            if not telefone:
+                user_redis['email'] = email
+                
+            if email and telefone:
+                user_redis['telefone'] = telefone
+                user_redis['email'] = email
+            user = json.dumps(user_redis)
+            self.redis.set(cpf, user)        
 

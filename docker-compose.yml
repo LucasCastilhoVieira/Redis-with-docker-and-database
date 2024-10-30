@@ -13,15 +13,13 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - DB_PORT=3306               
-      - DB_USER=root                  
-      - DB_PASSWORD=password          
+    
 
 
   redis:
     image: redis:alpine
     ports:
-      - "6380:6379"
+      - "6379:6379"
 
   db:
     image: mysql 
@@ -29,7 +27,3 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports: 
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-volumes:
-  mysql_data:

@@ -54,7 +54,7 @@ def update_user_info(Info: InfoUpdate, use_cases: UserUpdate = Depends(Update)):
         raise HTTPException(status_code=411, detail={"Error": f'{not_updated}', 'Type': 'Update Users', 'Count': 0, 'User': 'Not updated'})
             
     except ErrorConsultNotFound as cpf_not_found:
-        raise HTTPException(status_code=411, detail={"Error": f'{cpf_not_found}', 'Type': 'Update Users', 'Count': 0, 'User': 'Not updated'})
+        raise HTTPException(status_code=404, detail={"Error": f'{cpf_not_found}', 'Type': 'Update Users', 'Count': 0, 'User': 'Not updated'})
         
     except IncompleteCpf as incomplete_cpf:
         raise HTTPException(status_code=411, detail={"Error": f'{incomplete_cpf}', 'Type': 'Update Users', 'Count': 1, 'User': 'Not updated'})

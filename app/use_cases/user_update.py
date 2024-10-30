@@ -18,17 +18,35 @@ class UserUpdate(UserUpdateInterface):
         
     def update_user(self, cpf: str, telefone: str, email: str) -> Dict:
         cpf_format = self.formatation_cpf(cpf)
-        select_before = self.info_before(cpf_format)
         
-        self.verification_select(select_before)
         tel = self.format_tel(telefone)
         self.verification_email(email)
         
         
-        response = self.response(select_before, tel, email)
-        self.user_redis_repo.update_user_redis(cpf_format, email, tel)
-        self.user_repository.update_user(cpf_format, email, tel)       
-        return response
+        
+        repo_redis = self.user_redis_repo.search_user_on_redis(cpf_format)
+        if repo_redis == None:
+            select_before = self.info_before(cpf_format)
+            self.verification_select(select_before)
+            self.user_repository.update_user(cpf_format, email, tel)
+            response = self.response(select_before, tel, email)  
+            for nome, cpf, telefone, email in select_before:
+                self.user_redis_repo.insert_redis(nome, cpf, tel, email)
+            self.user_repository.update_user(cpf_format, email, tel)
+            return response
+        else:
+            select_before = self.info_before(cpf_format)
+            self.verification_select(select_before)
+            self.user_redis_repo.update_user_redis(cpf_format, email, tel)
+            self.user_repository.update_user(cpf_format, email, tel)
+            response = self.response(select_before, tel, email)      
+            return response
+        
+    @classmethod
+    def verification_select_database(self, select):
+        if select == []:
+            raise ErrorConsultNotFound('USUÁRIO NÃO ENCONTRADO')
+    
     
     
     @classmethod
@@ -70,24 +88,29 @@ class UserUpdate(UserUpdateInterface):
                 
     @classmethod
     def format_tel(self, telefone: str):
+        abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','ç']
         if telefone == '':
             return telefone
         else:
-                if len(telefone) == 11:
-                    try:
-                        format = '({}) {}-{}'.format(telefone[:2], telefone[2:7], telefone[7:])
-                        return format
-                    except:
-                        raise InvalidTel('TELEFONE INVÁLIDO')
-                elif len(telefone) < 11:
-                    raise IncompleteTel('TELEFONE INCOMPLETO')
-                elif len(telefone) > 11:
-                    raise IncompleteTel('TELEFONE MUITO GRANDE')
-                
-                abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','ç']
-                for letra in abc:
-                    if letra in telefone or letra.upper() in telefone:
-                        raise ErrorLyricsInTel('O TELEFONE NÃO DEVE CONTER LETRAS')
+            for letra in abc:
+                if letra in telefone or letra.upper() in telefone:
+                    raise ErrorLyricsInTel('O TELEFONE NÃO DEVE CONTER LETRAS')
+                else:
+                    pass
+            if len(telefone) == 11:
+                try:
+                    format = '({}) {}-{}'.format(telefone[:2], telefone[2:7], telefone[7:])
+                    return format
+                except:
+                    raise InvalidTel('TELEFONE INVÁLIDO')
+            elif len(telefone) < 11:
+                raise IncompleteTel('TELEFONE INCOMPLETO')
+            elif len(telefone) > 11:
+                raise IncompleteTel('TELEFONE MUITO GRANDE')
+            
+            for letra in abc:
+                if letra in telefone or letra.upper() in telefone:
+                    raise ErrorLyricsInTel('O TELEFONE NÃO DEVE CONTER LETRAS')
     
     @classmethod
     def verification_email(self, email):

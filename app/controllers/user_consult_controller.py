@@ -3,17 +3,15 @@ from infrastructure.db.repositories.UsersRepository import UserRepository
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
 from fastapi.exceptions import HTTPException
-from app.Utils.Exceptions import ErrorConsultNotFound, InvalidCpf, IncompleteCpf, ErrorLyricsInCpf, ErrorLyricsInTel
+from app.Utils.Exceptions import ErrorConsultNotFound, InvalidCpf, IncompleteCpf, ErrorLyricsInCpf
 from fastapi.responses import JSONResponse
 from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
-
 
 class Info(BaseModel):
     Nome: str = Field('Username')
     CPF: str = Field('000.000.000-00')
     Telefone: str = Field('(99) 99999-9999')
     Email: str = Field('username@gmail.com')
-
 
 class UserFound(BaseModel):
     Where: str = Field('Redis or Database')
@@ -24,9 +22,6 @@ class UserFound(BaseModel):
 
 
 router = APIRouter(tags=['USUARIOS'])
-
-
-
 
 UserInfoUseCase = lambda: UserInfo(repository=UserRepository(), redis_repository=UserRedisRepository())
 @router.get('/Consult', response_model=UserFound, status_code=200)

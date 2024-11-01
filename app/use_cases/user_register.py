@@ -3,7 +3,7 @@ from app.interfaces.user_repository import UserRepositoryInterface
 from app.interfaces.redis_repository import RedisUserInterface
 from typing import Dict
 from app.Utils.Exceptions import IncompleteCpf, ErrorNumberInName,\
-InvalidCpf, ErrorLyricsInCpf, ErrorEmail, InvalidTel, IncompleteTel, ErrorLyricsInTel
+InvalidCpf, ErrorLyricsInCpf, ErrorEmail, IncompleteTel, ErrorLyricsInTel
 import re
 
 
@@ -38,7 +38,7 @@ class UserRegister(UserRegisterInterface):
             numbers = ['0','1','2','3','4','5','6','7','8','9']
             for number in numbers:
                 if number in nome:
-                    raise ErrorNumberInName("O NOME NÃO DEVE CONTER NÚMEROS")
+                    raise ErrorNumberInName("ONOME NÃO DEVE CONTER NÚMEROS") 
 
     @classmethod
     def formatation_cpf(self, cpf: str):

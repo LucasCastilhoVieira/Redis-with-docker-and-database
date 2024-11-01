@@ -10,7 +10,6 @@ class UserRedisRepository(RedisUserInterface):
     def __init__(self):
         self.redis = RedisConnectionHandler().connect()
     
-    
     def insert_redis(self, nome: str, cpf: str, telefone: str, email: str): 
         user_json = {
             "nome": nome,

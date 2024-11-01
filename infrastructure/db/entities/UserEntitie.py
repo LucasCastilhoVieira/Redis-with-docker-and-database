@@ -1,10 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import VARCHAR, CHAR, Integer, Column
-
-
+from sqlalchemy import VARCHAR, CHAR, Column
 
 Base = declarative_base()
-
 class Users(Base):
     __tablename__ = 'users'
     nome = Column(VARCHAR(50))

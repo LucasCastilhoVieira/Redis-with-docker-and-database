@@ -1,11 +1,6 @@
 from app.interfaces.redis_repository import RedisUserInterface
 from infrastructure.db_redis.settings.connection import RedisConnectionHandler
 import json
-
-
-
-
-
 class UserRedisRepository(RedisUserInterface):
     def __init__(self):
         self.redis = RedisConnectionHandler().connect()
@@ -17,7 +12,6 @@ class UserRedisRepository(RedisUserInterface):
             "telefone": telefone,
             "email": email
         }
-        
         info = json.dumps(user_json)
         self.redis.set(cpf, info)
     
@@ -29,10 +23,8 @@ class UserRedisRepository(RedisUserInterface):
             user_info = json.loads(search)
             return user_info
     
-    
     def delete_user_redis(self, cpf):
         self.redis.delete(cpf)
-        
         
     def update_user_redis(self, cpf: str, email = '', telefone = ''):
         user = self.redis.get(cpf)

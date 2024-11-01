@@ -5,16 +5,12 @@ from infrastructure.db.repositories.UsersRepository import UserRepository
 from app.Utils.Exceptions import IncompleteCpf, InvalidCpf, ErrorConsultNotFound, ErrorLyricsInCpf
 from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
-
 router = APIRouter(tags=['USUARIOS'])
-
 class Atributtes(BaseModel):
     nome: str = Field('Username')
     cpf : str = Field('000.000.000-00')
     telefone: str = Field('(99) 99999-9999')
     email: str = Field('username@gmail.com')
-    
-    
 class SuccessResponse(BaseModel):
     Type: str = Field('Delete Users')
     Count: int = Field(1)
@@ -45,6 +41,7 @@ def delete(CPF: str, use_case: UserDelete = Depends(UserDeleteUseCase)):
             'Count':0,
             'User':'Not found'
         }
+        
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=res_error)
     
     except IncompleteCpf as incomplete_cpf:

@@ -4,9 +4,6 @@ from app.Utils.Exceptions import ErrorLyricsInCpf, IncompleteCpf, InvalidCpf, Er
 import re
 from app.interfaces.user_repository import UserRepositoryInterface
 from app.interfaces.redis_repository import RedisUserInterface
-
-
-
 class UserDelete(UserDeleteInterface):
     def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repo = repository
@@ -15,7 +12,6 @@ class UserDelete(UserDeleteInterface):
     def info_user(self, cpf: str):
         select = self.user_repo.select(cpf)
         return select
-    
     
     def delete_user(self, cpf: str) -> Dict:
     
@@ -45,9 +41,9 @@ class UserDelete(UserDeleteInterface):
                     raise IncompleteCpf("CPF INCOMPLETO")
                 else:
                     raise InvalidCpf("CPF MUITO GRANDE") 
-            
             else:
                 return cpf
+            
     @classmethod
     def verification_select(self, select):
         if select == []:
@@ -66,7 +62,6 @@ class UserDelete(UserDeleteInterface):
                     "CPF": cpf,
                     "TELEFONE": tel,
                     "EMAIL": email
-                    
                 }
             }
             return res

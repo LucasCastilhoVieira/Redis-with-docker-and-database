@@ -7,30 +7,20 @@ from pydantic import Field, BaseModel
 from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
 router = APIRouter(tags=['USUARIOS'])
-
-
 class InfoUpdate(BaseModel):
     Cpf: str = Field('000.000.000-00')
     Telefone: str = Field('')
     Email: str = Field('')
-
-
-
 class InfoUser(BaseModel):
     Nome: str = Field('Username')
     CPF: str = Field('000.000.000-00')
     Telefone: str = Field('(99) 99999-9999 -> (88) 88888-8888')
     Email: str = Field('username@gmail.com -> username123@gmail.com')
-
-
 class UserUpdated(BaseModel):
     Type: str = Field('Update Users')
     Count: int = Field(2)
     User: str = Field('Updated')
     Attributes: InfoUser
-
-
-
 
 Update = lambda: UserUpdate(repository=UserRepository(), redis_repository=UserRedisRepository())
 @router.put('/Update', response_model=UserUpdated)

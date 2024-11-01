@@ -6,40 +6,27 @@ from app.Utils.Exceptions import IncompleteCpf, InvalidCpf, ErrorNumberInName,\
 UserAlreadyRegistered, ErrorLyricsInCpf, ErrorEmail, IncompleteTel, InvalidTel, ErrorLyricsInTel
 from infrastructure.db_redis.repository.RedisRepository import UserRedisRepository
 
-
-
 router = APIRouter(tags=['USUARIOS'])
-
 class UsersRegister(BaseModel):
     nome: str  = Field('username')
     cpf : str = Field('000.000.000-00')
     telefone: str = Field('99999999999')
     email: str = Field('username@gmail.com')
-    
-    
 class Atributtes(BaseModel):
     nome: str = Field('Username')
     cpf : str = Field('000.000.000-00')
     telefone: str = Field('(99) 99999-9999')
     email: str = Field('username@gmail.com')
-
-
-    
 class SuccessResponse(BaseModel):
     Type: str = Field('Users')
     Count: int = Field(1)
     User: str = Field('Registered')
     Attributes: Atributtes
         
-        
-
-    
 UsersRegisterUseCase = lambda: UserRegister(repository=UserRepository(), redis_repository=UserRedisRepository())
 
 @router.post('/Register', status_code= 201,response_model=SuccessResponse)
 def register(users: UsersRegister, use_cases: UserRegister = Depends(UsersRegisterUseCase)):
-
-        
     try:
         res = use_cases.user_register(\
             users.nome.rstrip().lstrip(),
@@ -49,7 +36,6 @@ def register(users: UsersRegister, use_cases: UserRegister = Depends(UsersRegist
         )
            
         return SuccessResponse(
-            
             Type=res['Type'],
             Count=res['Count'],
             User=res['User'],

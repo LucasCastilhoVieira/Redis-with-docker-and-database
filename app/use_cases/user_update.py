@@ -3,10 +3,8 @@ from app.interfaces.user_repository import UserRepositoryInterface
 from typing import Dict
 from app.Utils.Exceptions import ErrorLyricsInCpf, ErrorLyricsInTel,\
 InvalidCpf, IncompleteCpf, IncompleteTel, InvalidTel, ErrorEmail, NotUpdated, ErrorConsultNotFound
-
 import re
 from app.interfaces.redis_repository import RedisUserInterface
-
 class UserUpdate(UserUpdateInterface):
     def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repository = repository
@@ -17,14 +15,12 @@ class UserUpdate(UserUpdateInterface):
         return select
         
     def update_user(self, cpf: str, telefone: str, email: str) -> Dict:
-        cpf_format = self.formatation_cpf(cpf)
         
+        cpf_format = self.formatation_cpf(cpf)
         tel = self.format_tel(telefone)
         self.verification_email(email)
-        
-        
-        
         repo_redis = self.user_redis_repo.search_user_on_redis(cpf_format)
+        
         if repo_redis == None:
             select_before = self.info_before(cpf_format)
             self.verification_select(select_before)
@@ -34,6 +30,7 @@ class UserUpdate(UserUpdateInterface):
                 self.user_redis_repo.insert_redis(nome, cpf, tel, email)
             self.user_repository.update_user(cpf_format, email, tel)
             return response
+        
         else:
             select_before = self.info_before(cpf_format)
             self.verification_select(select_before)
@@ -47,13 +44,10 @@ class UserUpdate(UserUpdateInterface):
         if select == []:
             raise ErrorConsultNotFound('USUÁRIO NÃO ENCONTRADO')
     
-    
-    
     @classmethod
     def verification_select(self, select):
         if select == []:
             raise ErrorConsultNotFound('USUÁRIO NÃO ENCONTRADO')
-    
     
     @classmethod
     def formatation_cpf(self, cpf: str):
@@ -160,7 +154,6 @@ class UserUpdate(UserUpdateInterface):
                     "CPF": cpf,
                     "TELEFONE": f"{tel_before} -> {tel}",
                     "EMAIL": f"{email_before} -> {email}"
-                    
                 }
             }
             return res

@@ -12,7 +12,6 @@ class UserRegister(UserRegisterInterface):
         self.user_repo = repository
         self.user_redis_repo = redis_repository
         
-    
     def user_register(self, nome: str, cpf: str, telefone: int, email: str) -> Dict: 
 
             cpf_str = str(cpf)
@@ -28,7 +27,6 @@ class UserRegister(UserRegisterInterface):
             response = self.response(nome.title(), format_cpf, tel, email)
             return response
         
-
     @classmethod
     def verification_name(self, nome: str):
         
@@ -82,8 +80,6 @@ class UserRegister(UserRegisterInterface):
                 if gmail in email or outlook in email:
                     return email
             raise ErrorEmail('O CAMPO DEVE CONTER O ENDEREÇO DE EMAIL')
-            
-    
     
     def format_tel(self, telefone: str):
             abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','ç']
@@ -98,8 +94,6 @@ class UserRegister(UserRegisterInterface):
                 raise IncompleteTel('TELEFONE INCOMPLETO')
             else:
                 raise IncompleteTel('TELEFONE MUITO GRANDE')
-
-
 
     @classmethod
     def response(self, nome, cpf, telefone, email):

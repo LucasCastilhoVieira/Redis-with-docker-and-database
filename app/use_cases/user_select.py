@@ -5,18 +5,11 @@ from typing import Dict
 from app.Utils.Exceptions import ErrorConsultNotFound, IncompleteCpf, InvalidCpf, ErrorLyricsInCpf
 from app.interfaces.redis_repository import RedisUserInterface
 
-
-
-
-
 class UserInfo(UserSelectInfoInterface):
     
     def __init__(self, repository: UserRepositoryInterface, redis_repository: RedisUserInterface):
         self.user_repo = repository
         self.user_redis_repo = redis_repository
-        
-        
-        
         
     def select_user(self, cpf: str) -> Dict:
         cpf_user = self.cpf_format(cpf)
@@ -25,9 +18,6 @@ class UserInfo(UserSelectInfoInterface):
        
         return info
 
-        
-    
-    
     @classmethod
     def cpf_format(self, cpf):
 
@@ -51,9 +41,6 @@ class UserInfo(UserSelectInfoInterface):
             else:
                 return cpf
         
-
-
-
     def verification_select_redis(self, select_redis, cpf):
             if select_redis == None:
                 select_database = self.user_repo.select(cpf)
@@ -71,8 +58,6 @@ class UserInfo(UserSelectInfoInterface):
         if select == []:
             raise ErrorConsultNotFound('USUÁRIO NÃO ENCONTRADO')
     
-    
-    
     @classmethod
     def format_response_redis(self, select):
             
@@ -87,11 +72,9 @@ class UserInfo(UserSelectInfoInterface):
                     "telefone": select['telefone'],
                     "email": select['email']
                 }
-                
             }
 
             return response
-            
             
     @classmethod
     def format_response_database(self, select):
@@ -108,7 +91,6 @@ class UserInfo(UserSelectInfoInterface):
                     "telefone": telefone,
                     "email": email
                 }
-                
             }
 
             return response

@@ -4,7 +4,6 @@ from app.controllers.user_consult_controller import router as RouterConsult
 from app.controllers.user_update_controller import router as RouterUpdate
 from app.controllers.user_delete_controller import router as RouterDelete
 
-
 app = FastAPI()
 
 app.include_router(RouterRegister)
